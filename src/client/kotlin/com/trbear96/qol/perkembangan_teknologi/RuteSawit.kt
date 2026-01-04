@@ -1,13 +1,28 @@
 package com.trbear96.qol.perkembangan_teknologi
 
 import com.trbear96.client
+import com.trbear96.qol.core.onTick
+import com.trbear96.qol.core.panen
+import com.trbear96.qol.core.round
+import net.minecraft.block.Block
 import net.minecraft.block.FluidBlock
+import net.minecraft.block.RedstoneBlock
 import net.minecraft.block.Waterloggable
 import net.minecraft.client.network.ClientPlayerEntity
 import net.minecraft.fluid.WaterFluid
+import net.minecraft.text.Text
+import net.minecraft.util.hit.BlockHitResult
+import net.minecraft.util.math.Direction
+import net.minecraft.util.math.Vec3d
+import net.minecraft.world.RaycastContext
+import kotlin.math.atan2
+import kotlin.math.sqrt
 
-abstract class RuteSawit(x: Double, y: Double, speed: Int) {
+abstract class RuteSawit(val x: Float,
+                         val y: Float,
+                         val speed: Int) {
     fun berhenti(){
+        client.options.attackKey.isPressed = false
         client.options.forwardKey.isPressed = false
         client.options.backKey.isPressed = false
         client.options.leftKey.isPressed = false
@@ -16,52 +31,68 @@ abstract class RuteSawit(x: Double, y: Double, speed: Int) {
     abstract fun tebangPohon(player: ClientPlayerEntity)
     abstract fun panen(player: ClientPlayerEntity) : Boolean
 
-    fun siapkanEngrek(player: ClientPlayerEntity){
-//        player.
+    private fun siapkanEngrek(player: ClientPlayerEntity){
+        val lerp = 0.1f // fraction of movement per tick
+        player.yaw += ((x - player.yaw + 540) % 360 - 180) * lerp
+        player.pitch += (y - player.pitch) * lerp
     }
 
-    object topaz : RuteSawit(.0, -58.5, 400) {
+    fun setupEngrek(ac: () -> Unit) {
+        onTick {
+            if (!panen) {
+                it.close()
+                return@onTick
+            }
+            val player = client.player ?: run {
+                it.close()
+                return@onTick
+            }
+
+            if (player.yaw.round(1) != x && player.pitch.round(1) != y) {
+                siapkanEngrek(player)
+            } else {
+                it.close()
+                ac.invoke()
+                println("Memanen...")
+            }
+        }
+    }
+
+    fun duid(){
+        setupEngrek {
+            SawitGameplay.panenSawit()
+        }
+    }
+
+    object topaz : RuteSawit(.0f, -58.5f, 400) {
         var kanan: Boolean? = true
         override fun tebangPohon(player: ClientPlayerEntity) {
-            client.options.leftKey.isPressed = false
-            client.options.rightKey.isPressed = false
-
-            val left = player.blockPos.east()
-            val right = player.blockPos.west()
-            kanan = if (client.world!!.getBlockState(right).block is FluidBlock) true
+            val left = player.blockPos.east(1)
+            val right = player.blockPos.west(1)
+            kanan = if (client.world!!.getBlockState(right).block is FluidBlock) false
             else if (client.world!!.getBlockState(left).block is FluidBlock) true
             else null
         }
 
         override fun panen(player: ClientPlayerEntity): Boolean {
             if(kanan == null) return false
-            if(kanan!!) panenKanan()
-            else panenKiri()
+//            client.options.attackKey.isPressed = true
+            client.options.forwardKey.isPressed = true
+            client.options.leftKey.isPressed = kanan!!
+            client.options.rightKey.isPressed = !kanan!!
             return true
         }
-
-        fun panenKanan() {
-            client.options.forwardKey.isPressed = false
-            client.options.leftKey.isPressed = true
-            client.options.rightKey.isPressed = false
-        }
-        fun panenKiri() {
-            client.options.forwardKey.isPressed = false
-            client.options.leftKey.isPressed = false
-            client.options.rightKey.isPressed = true
-        }
-
     }
 
-    object dumpy : RuteSawit(-164.0, 5.5, 233) {
-        override fun tebangPohon(player: ClientPlayerEntity) {
-            TODO("Not yet implemented")
-        }
-
-        override fun panen(player: ClientPlayerEntity): Boolean {
-            TODO("Not yet implemented")
-        }
-    }
+//    object dumpy : RuteSawit(-164.0, 5.5, 233) {
+//        override fun tebangPohon(player: ClientPlayerEntity) {
+//            TODO("Not yet implemented")
+//        }
+//
+//        override fun panen(player: ClientPlayerEntity): Boolean {
+//            TODO("Not yet implemented")
+//        }
+//    }
 }
 // Dumpy (SP-I),
 // Yangambi,

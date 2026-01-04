@@ -15,20 +15,25 @@ import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.input.KeyInput
 import net.minecraft.text.Text
 
-class GUI : Screen(Text.literal("GUI")) {
+fun createMainWindow(): Window {
     val window = Window(ElementaVersion.V10)
+    val panel = UIContainer().constrain {
+        x = 100.pixels()
+        width = 100.pixels()
+        height = 100.pixels()
+    } childOf window
+
+    UIText("Hello World!").constrain {
+        x = CenterConstraint()
+        y = CenterConstraint()
+    } childOf panel
+    return window
+}
+
+class GUI(val window: Window) : Screen(Text.literal("GUI")) {
 
     override fun init() {
-        val panel = UIContainer().constrain {
-            x = 100.pixels()
-            width = 100.pixels()
-            height = 100.pixels()
-        } childOf window
-
-        UIText("Hello World!").constrain {
-            x = CenterConstraint()
-            y = CenterConstraint()
-        } childOf panel
+        super.init()
     }
 
     override fun render(context: DrawContext?, mouseX: Int, mouseY: Int, deltaTicks: Float) {
