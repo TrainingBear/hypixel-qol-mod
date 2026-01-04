@@ -1,39 +1,36 @@
 {
 	"schemaVersion": 1,
-	"id": "modid",
+	"id": "mysawitqol",
 	"version": "${version}",
-	"name": "Example mod",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"name": "Sawit QoL",
+	"description": "Pak prabowo the best! jokowi juga terbaik, cuman lebih baik wowo. i love u wowo <3",
 	"authors": [
-		"Me!"
+		"KuJaTic"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/TrainingBear/hypixel-qol-mod"
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/modid/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.example.ExampleMod"
+			"com.trbear96.ExampleMod"
 		],
 		"client": [
-			"com.example.ExampleModClient"
+			{
+				"adapter": "kotlin",
+				"value": "com.trbear96.MySawit"
+			}
 		]
 	},
-	"mixins": [
-		"modid.mixins.json",
-		{
-			"config": "modid.client.mixins.json",
-			"environment": "client"
-		}
-	],
 	"depends": {
 		"fabricloader": ">=0.18.2",
-		"minecraft": "~1.21.11",
+		"minecraft": "~1.21.10",
 		"java": ">=21",
-		"fabric-api": "*"
+		"fabric-api": "*",
+		"fabric-language-kotlin": ">=1.13.7+kotlin.2.3.0"
 	},
 	"suggests": {
 		"another-mod": "*"
