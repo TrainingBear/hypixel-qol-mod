@@ -5,6 +5,7 @@ import com.trbear96.client
 import com.trbear96.menu
 import com.trbear96.qol.GUI
 import com.trbear96.qol.createMainWindow
+import com.trbear96.qol.guiexample.ExampleGui
 import com.trbear96.qol.perkembangan_teknologi.SawitGameplay
 import com.trbear96.rute
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper
@@ -43,7 +44,7 @@ object Buttons {
             while (menu.wasPressed()) {
                 openMenu = !openMenu
                 if (openMenu) {
-                    client.setScreen(GUI(createMainWindow()))
+                    client.setScreen(ExampleGui())
                     println("Membuka menu... ")
                 }
             }

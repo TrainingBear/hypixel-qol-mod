@@ -32,9 +32,26 @@ abstract class RuteSawit(val x: Float,
     abstract fun panen(player: ClientPlayerEntity) : Boolean
 
     private fun siapkanEngrek(player: ClientPlayerEntity){
-        val lerp = 0.1f // fraction of movement per tick
-        player.yaw += ((x - player.yaw + 540) % 360 - 180) * lerp
-        player.pitch += (y - player.pitch) * lerp
+        val lerp = 0.2f       // speed factor (can increase to 0.3~0.5 for faster)
+        val epsilon = 0.3f    // small threshold to snap
+        val maxDelta = 7f   // max 5 degrees per tick
+
+        // --- Yaw (horizontal) ---
+        var diffYaw = (x - player.yaw + 540) % 360 - 180
+        if (kotlin.math.abs(diffYaw) < epsilon) {
+            player.yaw = x    // snap if very close
+        } else {
+            player.yaw += diffYaw.coerceIn(-maxDelta, maxDelta) * lerp
+        }
+
+        // --- Pitch (vertical) ---
+        val diffPitch = y - player.pitch
+        if (kotlin.math.abs(diffPitch) < epsilon) {
+            player.pitch = y  // snap if very close
+        } else {
+            player.pitch += diffPitch.coerceIn(-maxDelta, maxDelta) * lerp
+        }
+
     }
 
     fun setupEngrek(ac: () -> Unit) {
@@ -48,7 +65,7 @@ abstract class RuteSawit(val x: Float,
                 return@onTick
             }
 
-            if (player.yaw.round(1) != x && player.pitch.round(1) != y) {
+            if (player.yaw.round(1) != x || player.pitch.round(1) != y) {
                 siapkanEngrek(player)
             } else {
                 it.close()
@@ -84,23 +101,52 @@ abstract class RuteSawit(val x: Float,
         }
     }
 
-//    object dumpy : RuteSawit(-164.0, 5.5, 233) {
-//        override fun tebangPohon(player: ClientPlayerEntity) {
-//            TODO("Not yet implemented")
-//        }
-//
-//        override fun panen(player: ClientPlayerEntity): Boolean {
-//            TODO("Not yet implemented")
-//        }
-//    }
+    object dumpy :  RuteSawit(-164.0f, 5.5f, 233) {
+        var kanan: Boolean? = true
+        override fun tebangPohon(player: ClientPlayerEntity) {
+            val right = player.blockPos.east(1)
+            val left = player.blockPos.west(1)
+            kanan = if (client.world!!.getBlockState(right).block is FluidBlock) false
+            else if (client.world!!.getBlockState(left).block is FluidBlock) true
+            else null
+        }
+
+        override fun panen(player: ClientPlayerEntity): Boolean {
+            if(kanan == null) return false
+            client.options.leftKey.isPressed = kanan!!
+            client.options.rightKey.isPressed = !kanan!!
+            return true
+        }
+
+    }
+
+    object yangambi : RuteSawit(0f, 0f, 248) {
+        var kanan: Boolean? = true
+        override fun tebangPohon(player: ClientPlayerEntity) {
+            val left = player.blockPos.east(1)
+            val right = player.blockPos.west(1)
+            kanan = if (client.world!!.getBlockState(right).block is FluidBlock) false
+            else if (client.world!!.getBlockState(left).block is FluidBlock) true
+            else null
+        }
+
+        override fun panen(player: ClientPlayerEntity): Boolean {
+            if(kanan == null) return false
+//            client.options.attackKey.isPressed = true
+            client.options.forwardKey.isPressed = true
+            client.options.leftKey.isPressed = kanan!!
+            client.options.rightKey.isPressed = !kanan!!
+            return true
+        }
+    }
 }
-// Dumpy (SP-I),
-// Yangambi,
+// Dumpy (SP-I) = mushroom
+// Yangambi = wheat, dan semacamnya
 // Langkat,
 // SP540,
 // 540_NG,
 // DelixPisifera(DXP)
-// Topaz, = melon
+// Topaz = melon, pumpkin
 // AAL_Sejahtera,
 // Nirmala,
 // Lestari,
