@@ -1,4 +1,4 @@
-package com.example;
+package com.trbear96;
 
 import net.fabricmc.api.ModInitializer;
 
