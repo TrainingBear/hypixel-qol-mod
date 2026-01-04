@@ -39,12 +39,13 @@ object Buttons {
                 panen = !panen
                 rute.duid()
             }
-        }
 
-        while (menu.wasPressed()) {
-            openMenu = !openMenu
-            if (openMenu) {
-                client.setScreen(GUI(createMainWindow()))
+            while (menu.wasPressed()) {
+                openMenu = !openMenu
+                if (openMenu) {
+                    client.setScreen(GUI(createMainWindow()))
+                    println("Membuka menu... ")
+                }
             }
         }
     }
