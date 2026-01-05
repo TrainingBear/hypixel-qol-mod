@@ -8,11 +8,12 @@
 		"KuJaTic"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/TrainingBear/hypixel-qol-mod"
+		"homepage": "https://discord.gg/fbAZSd3Hf2",
+		"sources": "https://github.com/TrainingBear/hypixel-qol-mod",
+		"issues": "https://github.com/TrainingBear/hypixel-qol-mod/issues"
 	},
 	"license": "CC0-1.0",
-	"icon": "assets/modid/icon.png",
+	"icon": "assets/mysawitqol/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [

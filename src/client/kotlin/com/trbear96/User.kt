@@ -13,9 +13,9 @@ val rute: RuteSawit
 
 val state = BitSet(256)
 
-var picked: String = "Yangambi"
+var picked: String = "Topaz"
 val routes = mapOf(
-    "Yangambi" to RuteSawit.yangambi,
+    "Topaz" to RuteSawit.topaz,
     "Dumpy" to RuteSawit.dumpy,
-    "Topaz" to RuteSawit.topaz
+    "Yangambi" to RuteSawit.yangambi,
 )

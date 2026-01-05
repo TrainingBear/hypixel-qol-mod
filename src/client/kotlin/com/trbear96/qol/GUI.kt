@@ -1,12 +1,9 @@
 package com.trbear96.qol
 
-import com.trbear96.qol.guiexample.ExampleGui
 import gg.essential.elementa.ElementaVersion
 import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.components.UIContainer
-import gg.essential.elementa.components.UIText
 import gg.essential.elementa.components.Window
-import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedMaxSizeConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
 import gg.essential.elementa.constraints.SiblingConstraint

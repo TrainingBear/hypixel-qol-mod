@@ -32,8 +32,8 @@ fun getTargetBlock(): BlockHitResult {
         RaycastContext(
             player.eyePos,   // start
             targetPos,       // end
-            RaycastContext.ShapeType.COLLIDER,
-            RaycastContext.FluidHandling.ANY,
+            RaycastContext.ShapeType.OUTLINE,
+            RaycastContext.FluidHandling.NONE,
             player
         )
     ) as BlockHitResult

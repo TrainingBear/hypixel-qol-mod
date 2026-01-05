@@ -12,6 +12,7 @@ import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
 import gg.essential.elementa.effects.ScissorEffect
 import java.awt.Color
+import java.net.URI
 
 /**
  * MainHUD is a fully fleshed example of a lot of Elementa's features
@@ -26,16 +27,16 @@ class MainHUD : WindowScreen(ElementaVersion.V10) {
     init {
         val container = UIContainer().constrain {
             x = CenterConstraint()
-            y = CenterConstraint()
+            y = 2.pixels
             height = 75.percent()
             width = 65.percent()
         } childOf window
 //        effect OutlineEffect(Color.cyan, 2f)
-        UIImage.ofResource("assets/modid/logo.png").constrain {
+        UIImage.ofResource("/assets/mysawitqol/logo.png").constrain {
             x = CenterConstraint() + 10.pixel
             y = 2.pixels()
-            width = 150.pixels()
-            height = ImageAspectConstraint()
+            height = 125.pixel
+            width = 125.pixel
         } childOf container
 
         val scroll = ScrollComponent().constrain {
@@ -47,22 +48,25 @@ class MainHUD : WindowScreen(ElementaVersion.V10) {
 
         for (route in routes.keys) {
             val rute = scroll.addRoute(route)
-            if(route == picked) rute.animate {
-                setColorAnimation(
-                    Animations.OUT_SIN,
-                    0.5f,
-                    Color(140, 140, 70).toConstraint(),
-                    0f
-                )
+            if(route == picked) {
+                rute.animate {
+                    setColorAnimation(
+                        Animations.OUT_SIN,
+                        0.5f,
+                        Color(140, 140, 70).toConstraint(),
+                        0f
+                    )
+                }
+                println("picked $picked")
             }
         }
 
-        UIText("Pilih sawit yang kamu suka!", shadow = false).constrain {
-            x = 2.pixels()
-            y = CenterConstraint()
-            textScale = 1.pixels()
-            color = Color.GREEN.darker().toConstraint()
-        } childOf container
+//        UIText("Pilih sawit yang kamu suka!", shadow = false).constrain {
+//            x = 2.pixels()
+//            y = CenterConstraint()
+//            textScale = 1.pixels()
+//            color = Color.GREEN.darker().toConstraint()
+//        } childOf container
 //        Modifier.gradient(top = Color(0x091323), Color.BLACK).applyToComponent(window)
     }
 
@@ -72,7 +76,7 @@ class MainHUD : WindowScreen(ElementaVersion.V10) {
             height = 10.pixels
             width = 100.percent
         }.onMouseClick {
-
+            println("new pick! $name")
             rutes.forEach { r ->
                 r.animate {
                     setColorAnimation(
@@ -112,13 +116,13 @@ class MainHUD : WindowScreen(ElementaVersion.V10) {
                 )
             }
         } childOf this
-        rutes.add(c)
         UIText(name, shadow = false).constrain {
             x = 1.pixels()
             y = CenterConstraint()
             textScale = 0.8.pixels()
             color = Color(0x091323).toConstraint()
         } childOf c
+        rutes.add(c)
         return c
     }
 

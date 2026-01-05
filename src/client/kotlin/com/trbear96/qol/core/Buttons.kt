@@ -3,10 +3,7 @@ package com.trbear96.qol.core
 import com.trbear96.bertani
 import com.trbear96.client
 import com.trbear96.menu
-import com.trbear96.qol.GUI
-import com.trbear96.qol.createMainWindow
-import com.trbear96.qol.guiexample.ExampleGui
-import com.trbear96.qol.perkembangan_teknologi.SawitGameplay
+import com.trbear96.qol.guiexample.MainHUD
 import com.trbear96.rute
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper
 import net.minecraft.client.option.KeyBinding
@@ -44,7 +41,7 @@ object Buttons {
             while (menu.wasPressed()) {
                 openMenu = !openMenu
                 if (openMenu) {
-                    client.setScreen(ExampleGui())
+                    client.setScreen(MainHUD())
                     println("Membuka menu... ")
                 }
             }

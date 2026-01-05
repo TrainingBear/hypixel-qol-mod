@@ -10,6 +10,7 @@ import com.trbear96.rute
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
 import net.minecraft.block.RedstoneBlock
+import kotlin.random.Random
 
 object SawitGameplay {
     var pohon = false
@@ -58,6 +59,24 @@ object SawitGameplay {
                 final = false
                 client.player?.networkHandler?.sendChatCommand("warp garden")
             }
+            istirahat()
         }
+    }
+
+    fun istirahat(){
+        if(0.00417f.rollChance()){
+            println("Sedang istirahat... ")
+            panen = false
+            runTaskLater(Random.nextInt(30, 5)){
+                rute.duid()
+            }
+        }
+    }
+
+    fun Float.rollChance(): Boolean {
+        val roll = Random.nextInt(1, 1_000_001) // 0.0001 → 100.0000
+        val chance = (this * 10_000).toInt()
+
+        return roll <= chance
     }
 }
