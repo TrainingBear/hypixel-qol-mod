@@ -12,18 +12,16 @@ import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
 import gg.essential.elementa.effects.ScissorEffect
 import java.awt.Color
-import java.net.URI
-import java.net.URL
 
 /**
- * ExampleGui is a fully fleshed example of a lot of Elementa's features
+ * MainHUD is a fully fleshed example of a lot of Elementa's features
  * and how to effectively use them. This example is a "sticky note pad"
  * where users can create, delete, move, and write on little sticky notes.
  *
  * The example won't look particularly pretty, but that is up to the programmer
  * to design their GUIs how they wish.
  */
-class ExampleGui : WindowScreen(ElementaVersion.V10) {
+class MainHUD : WindowScreen(ElementaVersion.V10) {
     val rutes = mutableListOf<UIComponent>()
     init {
         val container = UIContainer().constrain {
@@ -33,11 +31,11 @@ class ExampleGui : WindowScreen(ElementaVersion.V10) {
             width = 65.percent()
         } childOf window
 //        effect OutlineEffect(Color.cyan, 2f)
-        UIImage.ofURL(URI("https://sawit-ku.ditjenbun.pertanian.go.id/admin/logo.png").toURL()).constrain {
+        UIImage.ofResource("assets/modid/logo.png").constrain {
             x = CenterConstraint() + 10.pixel
             y = 2.pixels()
             width = 150.pixels()
-            height = 65.pixels
+            height = ImageAspectConstraint()
         } childOf container
 
         val scroll = ScrollComponent().constrain {
@@ -48,10 +46,18 @@ class ExampleGui : WindowScreen(ElementaVersion.V10) {
         } childOf container
 
         for (route in routes.keys) {
-            scroll.addRoute(route)
+            val rute = scroll.addRoute(route)
+            if(route == picked) rute.animate {
+                setColorAnimation(
+                    Animations.OUT_SIN,
+                    0.5f,
+                    Color(140, 140, 70).toConstraint(),
+                    0f
+                )
+            }
         }
 
-        UIText("Indonesia maju bersama sawit!", shadow = false).constrain {
+        UIText("Pilih sawit yang kamu suka!", shadow = false).constrain {
             x = 2.pixels()
             y = CenterConstraint()
             textScale = 1.pixels()
@@ -60,7 +66,7 @@ class ExampleGui : WindowScreen(ElementaVersion.V10) {
 //        Modifier.gradient(top = Color(0x091323), Color.BLACK).applyToComponent(window)
     }
 
-    fun ScrollComponent.addRoute(name: String){
+    fun ScrollComponent.addRoute(name: String): UIComponent {
         val c = UIBlock(Color(207, 207, 196)).constrain {
             y = SiblingConstraint(2f)
             height = 10.pixels
@@ -113,6 +119,7 @@ class ExampleGui : WindowScreen(ElementaVersion.V10) {
             textScale = 0.8.pixels()
             color = Color(0x091323).toConstraint()
         } childOf c
+        return c
     }
 
     class StickyNote : UIBlock(Color.BLACK) {
