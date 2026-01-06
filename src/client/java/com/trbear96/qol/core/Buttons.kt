@@ -41,7 +41,7 @@ object Buttons {
             while (menu.wasPressed()) {
                 openMenu = !openMenu
                 if (openMenu) {
-                    client.setScreen(MainHUD())
+                    client.setScreen(MainHUD)
                     println("Membuka menu... ")
                 }
             }

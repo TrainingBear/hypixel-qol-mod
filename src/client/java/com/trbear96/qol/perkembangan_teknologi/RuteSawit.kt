@@ -4,6 +4,7 @@ import com.trbear96.client
 import com.trbear96.qol.core.onTick
 import com.trbear96.qol.core.panen
 import com.trbear96.qol.core.round
+import com.trbear96.qol.core.runTaskLater
 import net.minecraft.block.Block
 import net.minecraft.block.FluidBlock
 import net.minecraft.block.RedstoneBlock
@@ -106,8 +107,12 @@ abstract class RuteSawit(val x: Float,
         override fun tebangPohon(player: ClientPlayerEntity) {
             val right = player.blockPos.east(1)
             val left = player.blockPos.west(1)
-            kanan = if (client.world!!.getBlockState(right).block is FluidBlock) false
-            else if (client.world!!.getBlockState(left).block is FluidBlock) true
+            client.options.backKey.isPressed = true
+            runTaskLater(10){
+                client.options.backKey.isPressed = false
+            }
+            kanan = if (client.world!!.getBlockState(right).isAir) false
+            else if (client.world!!.getBlockState(left).isAir) true
             else null
         }
 

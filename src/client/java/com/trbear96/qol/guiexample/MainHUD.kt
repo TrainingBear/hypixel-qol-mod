@@ -22,7 +22,7 @@ import java.net.URI
  * The example won't look particularly pretty, but that is up to the programmer
  * to design their GUIs how they wish.
  */
-class MainHUD : WindowScreen(ElementaVersion.V10) {
+object MainHUD : WindowScreen(ElementaVersion.V10) {
     val rutes = mutableListOf<UIComponent>()
     init {
         val container = UIContainer().constrain {
