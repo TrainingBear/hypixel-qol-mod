@@ -108,11 +108,18 @@ abstract class RuteSawit(val x: Float,
             val right = player.blockPos.east(1)
             val left = player.blockPos.west(1)
             client.options.backKey.isPressed = true
-            runTaskLater(10){
+            runTaskLater(30){
                 client.options.backKey.isPressed = false
             }
-            kanan = if (client.world!!.getBlockState(right).isAir) false
-            else if (client.world!!.getBlockState(left).isAir) true
+            kanan = if (client.world!!.getBlockState(right).isAir) {
+                false
+            }
+            else if (client.world!!.getBlockState(left).isAir) {
+                runTaskLater(20){
+                    kanan = true
+                }
+                false
+            }
             else null
         }
 

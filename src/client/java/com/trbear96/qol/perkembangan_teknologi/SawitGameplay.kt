@@ -10,15 +10,39 @@ import com.trbear96.rute
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
 import net.minecraft.block.RedstoneBlock
+import net.minecraft.client.world.ClientWorld
 import net.minecraft.util.Hand
 import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.Vec3i
 import kotlin.random.Random
 
 object SawitGameplay {
     var pohon = false
     var final = false
     @JvmField var breakingPos: BlockPos? = null;
+    var lahan : ClientWorld? = null
+    var pos: BlockPos? = null
+
+    fun update_lahan(){
+        lahan = client.world
+        pos = client.player?.blockPos
+    }
+
+    fun cek_lahan(): Boolean{
+        val current = client.player!!.blockPos
+        if(client.world != lahan ||
+            pos?.isWithinDistance(Vec3i(current.x, current.y, current.z), 2.0) != true ||
+            pos?.isWithinDistance(Vec3i(current.x, current.y, current.z), .0) == true // TODO
+            ){
+            // lahan berubah
+            // lakukan sesuati
+            // TODO
+            return false
+        }
+        return true
+    }
 
     // initialization
     fun tanamSawit() {
@@ -26,7 +50,8 @@ object SawitGameplay {
             val player = client.player
             if (player != null) {
                 val down = player.blockPos.down()
-                val block = client.world!!.getBlockState(down).block
+                val blockState = client.world!!.getBlockState(down)
+                val block = blockState.block
                 pohon = block is RedstoneBlock
                 final = block == Blocks.END_STONE
             }
@@ -38,7 +63,7 @@ object SawitGameplay {
         var swingCooldown = 0
         breakingPos = null
         onTick {
-            if(!panen || client.world==null) {
+            if(!panen || client.world==null || !cek_lahan()) {
                 it.close()
                 println("Berhenti memanen..")
                 rute.berhenti()
@@ -46,6 +71,7 @@ object SawitGameplay {
             }
             val player = client.player
             if(player==null) return@onTick
+            update_lahan()
 
             val berhasil = rute.panen(player)
             if(!berhasil) {
@@ -54,9 +80,9 @@ object SawitGameplay {
             }
             if(client.crosshairTarget !is BlockHitResult){
                 breakingPos = null
-                return@onTick
+//                return@onTick
             }
-            if (swingCooldown <= 0) {
+            if (!player.handSwinging) {
                 player.swingHand(Hand.MAIN_HAND);
                 swingCooldown = 6; // ~300ms
             }
@@ -67,10 +93,9 @@ object SawitGameplay {
             val hit = client.crosshairTarget as? BlockHitResult
             if (hit == null || client.world!!.isAir(hit.blockPos)) {
                 breakingPos = null
-                return@onTick
+//                return@onTick
             }
-
-            if (breakingPos == null) {
+            else if (breakingPos == null) {
                 breakingPos = hit.blockPos
                 client.interactionManager?.attackBlock(hit.blockPos, player.facing)
             } else if (breakingPos == hit.blockPos) {
@@ -100,6 +125,7 @@ object SawitGameplay {
                 println("Istirahat selesai")
                 panen = true
                 rute.duid()
+                // TODO
             }
         }
     }
