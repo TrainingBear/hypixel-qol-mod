@@ -52,8 +52,8 @@ object SawitGameplay {
                 val down = player.blockPos.down()
                 val blockState = client.world!!.getBlockState(down)
                 val block = blockState.block
-                pohon = block is RedstoneBlock
-                final = block == Blocks.END_STONE
+                pohon = block is RedstoneBlock || block== Blocks.GRASS_BLOCK
+                final = block == Blocks.END_STONE || block == Blocks.OBSIDIAN
             }
         }
     }
@@ -63,7 +63,7 @@ object SawitGameplay {
         var swingCooldown = 0
         breakingPos = null
         onTick {
-            if(!panen || client.world==null || !cek_lahan()) {
+            if(!panen || client.world==null) {
                 it.close()
                 println("Berhenti memanen..")
                 rute.berhenti()
@@ -82,14 +82,14 @@ object SawitGameplay {
                 breakingPos = null
 //                return@onTick
             }
-            if (!player.handSwinging) {
-                player.swingHand(Hand.MAIN_HAND);
-                swingCooldown = 6; // ~300ms
-            }
-
-            if (swingCooldown > 0) {
-                swingCooldown--;
-            }
+//            if (!player.handSwinging) {
+//                player.swingHand(Hand.MAIN_HAND);
+//                swingCooldown = 6;
+//            }
+//
+//            if (swingCooldown > 0) {
+//                swingCooldown--;
+//            }
             val hit = client.crosshairTarget as? BlockHitResult
             if (hit == null || client.world!!.isAir(hit.blockPos)) {
                 breakingPos = null

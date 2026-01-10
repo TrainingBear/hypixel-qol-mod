@@ -5,19 +5,8 @@ import com.trbear96.qol.core.onTick
 import com.trbear96.qol.core.panen
 import com.trbear96.qol.core.round
 import com.trbear96.qol.core.runTaskLater
-import net.minecraft.block.Block
 import net.minecraft.block.FluidBlock
-import net.minecraft.block.RedstoneBlock
-import net.minecraft.block.Waterloggable
 import net.minecraft.client.network.ClientPlayerEntity
-import net.minecraft.fluid.WaterFluid
-import net.minecraft.text.Text
-import net.minecraft.util.hit.BlockHitResult
-import net.minecraft.util.math.Direction
-import net.minecraft.util.math.Vec3d
-import net.minecraft.world.RaycastContext
-import kotlin.math.atan2
-import kotlin.math.sqrt
 
 abstract class RuteSawit(val x: Float,
                          val y: Float,
@@ -151,6 +140,30 @@ abstract class RuteSawit(val x: Float,
             return true
         }
     }
+
+    object Nirmala : RuteSawit(135f, -45f, 219){
+        var kanan: Boolean? = true
+        override fun tebangPohon(player: ClientPlayerEntity) {
+            val right = player.blockPos.east(1)
+            val left = player.blockPos.west(1)
+            kanan = if (!client.world!!.getBlockState(right).isSolidBlock(client.world, right)) {
+                false
+            }
+            else if (!client.world!!.getBlockState(left).isSolidBlock(client.world, left)) {
+                runTaskLater(13){
+                    kanan = true
+                }
+                false
+            }
+            else null
+        }
+        override fun panen(player: ClientPlayerEntity): Boolean {
+            if(kanan == null) return false
+            client.options.forwardKey.isPressed = kanan!!
+            client.options.rightKey.isPressed = !kanan!!
+            return true
+        }
+    }
 }
 // Dumpy (SP-I) = mushroom
 // Yangambi = wheat, dan semacamnya
@@ -160,7 +173,7 @@ abstract class RuteSawit(val x: Float,
 // DelixPisifera(DXP)
 // Topaz = melon, pumpkin
 // AAL_Sejahtera,
-// Nirmala,
+// Nirmala, sugar, sunflower, wildflower
 // Lestari,
 // Sriwijaya_2,
 // Sriwijaya_4

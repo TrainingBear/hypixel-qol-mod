@@ -52,12 +52,18 @@ public abstract class ClientPlayerInteractionManagerMixin {
 //			if(player == null) return;
 ////			SawitGameplay.breakingPos = false;
 //			player.swingHand(Hand.MAIN_HAND);
-//			System.out.println("Swing!");
+////			System.out.println("Swing!");
 //		}
 //	}
 @Inject(method = "breakBlock", at = @At("HEAD"))
 private void onBreakBlock(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
 	SawitGameplay.breakingPos = null;
+	var client = MinecraftClient.getInstance();
+			var player = client.player;
+			if(player == null) return;
+//			SawitGameplay.breakingPos = false;
+			player.swingHand(Hand.MAIN_HAND);
+//			System.out.println("Swing!");
 //	System.out.println("Blocks has been broken");
 }
 }
