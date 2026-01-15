@@ -47,9 +47,9 @@ fun aturUlangConfig(){
     capek = config.get(METODEPANENSAWIT).get(CAPEK).asBoolean()
 }
 
-const val MYSAWIT = "mysawit"
-const val METODEPANENSAWIT = "metodepanensawit"
-const val TIPE = "tipe"
-const val CAPEK = "kesel"
-const val JAGAENGGREK = "jagaenggrek"
-const val KEBALIK = "kebalik"
+const val MYSAWIT = "mysawit" // nama
+const val METODEPANENSAWIT = "metodepanensawit" // branch nandur
+const val TIPE = "tipe" // tipe picked
+const val CAPEK = "capek" // pesan pas istirahat
+const val JAGAENGGREK = "jagaenggrek" // jaga facing
+const val KEBALIK = "kebalik" // COMING SOON

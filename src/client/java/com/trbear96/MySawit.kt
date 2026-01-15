@@ -21,16 +21,15 @@ class MySawit : ClientModInitializer {
         Buttons
 
         confighandler = JsonConfig(null, "mysawit", true, autoLoad = true)
-        val node: ObjectNode = confighandler.createOrGet(MYSAWIT) ?: throw NullPointerException("mysawit cannot be created")
-        if (node.isEmpty) { // pengalaman pertama
-            node.getOrMakeObject(METODEPANENSAWIT).apply {
-                put(TIPE, routes.keys.firstOrNull() ?: "Topaz") //jaga2
-                put(JAGAENGGREK, false)
-                put(KEBALIK, false)
-                put(CAPEK, true)
-            } // tipe DEFAULT
-            confighandler.save(MYSAWIT)
-        }
+        val node: ObjectNode =
+            confighandler.createOrGet(MYSAWIT) ?: throw NullPointerException("mysawit cannot be created")
+        node.getOrMakeObject(METODEPANENSAWIT).apply {
+            if (!has(TIPE)) put(TIPE, routes.keys.firstOrNull() ?: "Topaz") //jaga2
+            if (!has(JAGAENGGREK)) put(JAGAENGGREK, false)
+            if (!has(KEBALIK)) put(KEBALIK, false)
+            if (!has(CAPEK)) put(CAPEK, true)
+        } // tipe DEFAULT
+        confighandler.save(MYSAWIT)
         config = node
         aturUlangConfig()
         SawitGameplay.tanamSawit()
