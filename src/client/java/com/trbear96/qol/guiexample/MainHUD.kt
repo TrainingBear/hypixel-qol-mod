@@ -78,7 +78,7 @@ object MainHUD : WindowScreen(ElementaVersion.V10) {
                             Color(140, 140, 70).toConstraint()
                         )
                     }
-//                    println("Set jaga enggrek to: ${config.get(METODEPANENSAWIT).get(JAGAENGGREK).asBoolean()}")
+                    println("Set jaga enggrek to: ${config.get(METODEPANENSAWIT).get(JAGAENGGREK).asBoolean()}")
                 }, onkeluar = {
                     this.animate { // apply
                         setColorAnimation(
@@ -107,13 +107,13 @@ object MainHUD : WindowScreen(ElementaVersion.V10) {
                             Color(140, 140, 70).toConstraint()
                         )
                     }
-//                    println("Set capek msg to: ${config.get(METODEPANENSAWIT).get(CAPEK).asBoolean()}")
+                    println("Set capek msg to: ${config.get(METODEPANENSAWIT).get(CAPEK).asBoolean()}")
                 }, onkeluar = {
                     this.animate { // apply
                         setColorAnimation(
                             Animations.IN_OUT_BOUNCE,
-                            0.5f,
-                            if (config.get(METODEPANENSAWIT).get(JAGAENGGREK).asBoolean())
+                            0.25f,
+                            if (config.get(METODEPANENSAWIT).get(CAPEK).asBoolean())
                                 Color(140, 140, 70).toConstraint()
                             else Color(186, 186, 186).toConstraint()
                         )
@@ -132,7 +132,7 @@ object MainHUD : WindowScreen(ElementaVersion.V10) {
                     this.animate {
                         setColorAnimation(
                             Animations.IN_OUT_BOUNCE,
-                            0.5f,
+                            0.25f,
                             Color(120, 120, 120).toConstraint()
                         )
                     }
