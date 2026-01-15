@@ -3,15 +3,19 @@ package com.trbear96.qol.core
 import com.trbear96.bertani
 import com.trbear96.client
 import com.trbear96.menu
+import com.trbear96.picked
 import com.trbear96.qol.guiexample.MainHUD
 import com.trbear96.rute
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper
 import net.minecraft.client.option.KeyBinding
+import net.minecraft.text.Text
+import net.minecraft.util.Formatting
 import net.minecraft.util.Identifier
 import org.lwjgl.glfw.GLFW
 
 var panen: Boolean = false
 var openMenu: Boolean = false
+
 object Buttons {
     val keyCategory = KeyBinding.Category.create(Identifier.ofVanilla("sawit"))
 
@@ -35,6 +39,15 @@ object Buttons {
         onTick {
             while (bertani.wasPressed()) {
                 panen = !panen
+                client.player?.sendMessage(
+                    Text.literal("[MySawit] ")
+                        .styled { it.withBold(true).withColor(Formatting.GREEN) }
+                        .append(
+                            Text.literal(if (panen) "Lanjut nandur $picked kang" else "Uwes kesel nandure kang?")
+                                .styled { style -> style.withBold(false).withColor(Formatting.YELLOW) }
+                        ),
+                    false
+                )
                 rute.duid()
             }
 
