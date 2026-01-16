@@ -134,7 +134,7 @@ object SawitGameplay {
     fun istirahat() {
         if (0.00417f.rollChance()) {
             println("Sedang istirahat... ")
-            if (capek)
+            if (capek)//
                 client.player?.sendMessage(
                     Text.literal("[MySawit] ")
                         .styled { it.withBold(true).withColor(Formatting.GREEN) }
