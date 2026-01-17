@@ -59,7 +59,8 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 tasks.remapJar {
-	destinationDirectory.set(file("D:\\PrismLauncher\\instances\\1.21\\minecraft\\mods\\"))
+	destinationDirectory.set(file("/home/kujatic/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher/instances/1.21.10/.minecraft/mods/"))
+//	destinationDirectory.set(file("D:\\PrismLauncher\\instances\\1.21\\minecraft\\mods\\"))
 }
 
 tasks.build{

@@ -69,7 +69,6 @@ object SawitGameplay {
     var flag = false
 
     fun panenSawit() {
-        var swingCooldown = 0
         breakingPos = null
         onTick {
             if (!panen || client.world == null) {
@@ -95,26 +94,17 @@ object SawitGameplay {
 
             if (jagaenggrek && (player.yaw.round(1) != rute.x || player.pitch.round(1) != rute.y)) {
                 siapinEngrek(player)
-                return@onTick
+//                return@onTick
             }
-//            if (!player.handSwinging) {
-//                player.swingHand(Hand.MAIN_HAND);
-//                swingCooldown = 6;
-//            }
-//
-//            if (swingCooldown > 0) {
-//                swingCooldown--;
-//            }
             val hit = client.crosshairTarget as? BlockHitResult
             if (hit == null || client.world!!.isAir(hit.blockPos)) {
                 breakingPos = null
-//                return@onTick
             } else if (breakingPos == null) {
                 breakingPos = hit.blockPos
                 client.interactionManager?.attackBlock(hit.blockPos, player.facing)
             } else if (breakingPos == hit.blockPos) {
                 client.interactionManager?.updateBlockBreakingProgress(hit.blockPos, player.facing)
-            }
+            } else breakingPos = hit.blockPos
 
             if (pohon && !flag) {
                 println("Edge has been reached")
