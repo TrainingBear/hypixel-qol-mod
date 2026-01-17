@@ -1,6 +1,8 @@
 package com.trbear96.qol.perkembangan_teknologi
 
+import com.trbear96.METODEPANENSAWIT
 import com.trbear96.client
+import com.trbear96.config
 import com.trbear96.qol.core.onTick
 import com.trbear96.qol.core.panen
 import com.trbear96.qol.core.round
@@ -25,7 +27,6 @@ abstract class RuteSawit(val x: Float,
         val lerp = 0.2f       // speed factor (can increase to 0.3~0.5 for faster)
         val epsilon = 0.3f    // small threshold to snap
         val maxDelta = 7f   // max 5 degrees per tick
-
         // --- Yaw (horizontal) ---
         var diffYaw = (x - player.yaw + 540) % 360 - 180
         if (kotlin.math.abs(diffYaw) < epsilon) {
@@ -173,7 +174,7 @@ abstract class RuteSawit(val x: Float,
 // DelixPisifera(DXP)
 // Topaz = melon, pumpkin
 // AAL_Sejahtera,
-// Nirmala, sugar, sunflower, wildflower
+// Nirmala = sugar, sunflower, wildflower
 // Lestari,
 // Sriwijaya_2,
 // Sriwijaya_4
