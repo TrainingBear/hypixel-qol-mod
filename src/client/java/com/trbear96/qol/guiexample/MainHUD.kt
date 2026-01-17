@@ -64,7 +64,10 @@ object MainHUD : WindowScreen(ElementaVersion.V10) {
         }
         // JAGA ENGGREK
         tombol.add(
-            UIBlock(Color(186, 186, 186).toConstraint())
+            UIBlock(
+                if (jagaenggrek) Color(140, 140, 70).toConstraint()
+                else Color(186, 186, 186).toConstraint()
+            )
                 .modifTombol("Jaga Enggrek", container, onklik = {
                     config.getOrMakeObject(METODEPANENSAWIT).put(
                         JAGAENGGREK,
@@ -93,7 +96,10 @@ object MainHUD : WindowScreen(ElementaVersion.V10) {
         )
         // CAPEK MSG
         tombol.add(
-            UIBlock(Color(186, 186, 186).toConstraint())
+            UIBlock(
+                if (capek) Color(140, 140, 70).toConstraint()
+                else Color(186, 186, 186).toConstraint()
+            )
                 .modifTombol("Capek MSG", container, onklik = {
                     config.getOrMakeObject(METODEPANENSAWIT).put(
                         CAPEK,
