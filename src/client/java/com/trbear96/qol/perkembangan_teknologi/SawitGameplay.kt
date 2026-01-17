@@ -1,26 +1,24 @@
 package com.trbear96.qol.perkembangan_teknologi
 
-import com.trbear96.bertani
 import com.trbear96.capek
 import com.trbear96.client
 import com.trbear96.jagaenggrek
-import com.trbear96.qol.core.getTargetBlock
+import com.trbear96.qol.core.TickScheduler.scheduleTimer
+import com.trbear96.qol.core.duniasebelum
 import com.trbear96.qol.core.onTick
 import com.trbear96.qol.core.panen
-import com.trbear96.qol.core.round
 import com.trbear96.qol.core.runTaskLater
 import com.trbear96.rute
-import net.minecraft.block.Block
 import net.minecraft.block.Blocks
 import net.minecraft.block.RedstoneBlock
 import net.minecraft.client.network.ClientPlayerEntity
 import net.minecraft.client.world.ClientWorld
+import net.minecraft.sound.SoundCategory
+import net.minecraft.sound.SoundEvents
 import net.minecraft.text.Text
 import net.minecraft.util.Formatting
-import net.minecraft.util.Hand
 import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Vec3d
 import net.minecraft.util.math.Vec3i
 import kotlin.random.Random
 
@@ -29,7 +27,7 @@ object SawitGameplay {
     var final = false
 
     @JvmField
-    var breakingPos: BlockPos? = null;
+    var breakingPos: BlockPos? = null
     var lahan: ClientWorld? = null
     var pos: BlockPos? = null
 
@@ -69,13 +67,38 @@ object SawitGameplay {
     var flag = false
 
     fun panenSawit() {
+        var swingCooldown = 0
         breakingPos = null
         onTick {
-            if (!panen || client.world == null) {
+            val pindahdimensi: Boolean =
+                if (duniasebelum == null) false
+                else duniasebelum != client.world?.registryKey
+            if (!panen || pindahdimensi) {
                 it.close()
                 println("Berhenti memanen..")
                 pohon = false
                 rute.berhenti()
+                if (pindahdimensi) {
+                    client.player?.let { p ->
+                        p.sendMessage(
+                            Text.literal("[MySawit] ")
+                                .styled {t -> t.withBold(true).withColor(Formatting.GREEN) }
+                                .append(
+                                    Text.literal("Bahaya antek-antek asing mengintai")
+                                        .styled { style -> style.withBold(false).withColor(Formatting.RED) }
+                                ), false
+                        )
+                        var count = 1
+                        scheduleTimer(1, 2) { w ->
+                            if (count > 15) {
+                                w.close()
+                                return@scheduleTimer
+                            }
+                            p.playSound(SoundEvents.ITEM_TOTEM_USE, 10F, 1.2F)
+                            count += 1
+                        }
+                    }
+                }
                 return@onTick
             }
             val player = client.player ?: return@onTick
@@ -87,24 +110,28 @@ object SawitGameplay {
                 rute.berhenti()
                 return@onTick
             }
-            if (client.crosshairTarget !is BlockHitResult) {
-                breakingPos = null
-//                return@onTick
-            }
-
-            if (jagaenggrek && (player.yaw.round(1) != rute.x || player.pitch.round(1) != rute.y)) {
+            if (jagaenggrek && (player.yaw != rute.x || player.pitch != rute.y))
                 siapinEngrek(player)
-//                return@onTick
-            }
-            val hit = client.crosshairTarget as? BlockHitResult
-            if (hit == null || client.world!!.isAir(hit.blockPos)) {
+//            if (!player.handSwinging) {
+//                player.swingHand(Hand.MAIN_HAND);
+//                swingCooldown = 6;
+//            }
+//
+//            if (swingCooldown > 0) {
+//                swingCooldown--;
+//            }
+            if (client.crosshairTarget !is BlockHitResult)
                 breakingPos = null
-            } else if (breakingPos == null) {
+//                return@onTick
+            val hit = client.crosshairTarget as? BlockHitResult
+            if (hit == null || client.world!!.isAir(hit.blockPos))
+                breakingPos = null
+//                return@onTick
+            else if (breakingPos == null) {
                 breakingPos = hit.blockPos
                 client.interactionManager?.attackBlock(hit.blockPos, player.facing)
-            } else if (breakingPos == hit.blockPos) {
+            } else if (breakingPos == hit.blockPos)
                 client.interactionManager?.updateBlockBreakingProgress(hit.blockPos, player.facing)
-            } else breakingPos = hit.blockPos
 
             if (pohon && !flag) {
                 println("Edge has been reached")
@@ -124,18 +151,47 @@ object SawitGameplay {
     fun istirahat() {
         if (0.00417f.rollChance()) {
             println("Sedang istirahat... ")
-            if (capek)//
-                client.player?.sendMessage(
-                    Text.literal("[MySawit] ")
-                        .styled { it.withBold(true).withColor(Formatting.GREEN) }
-                        .append(
-                            Text.literal("ngko disek kang, kesel")
-                                .styled { style -> style.withBold(false).withColor(Formatting.WHITE) }
-                        ), true
-                )
+            client.player?.let {
+                if (capek)
+                    it.sendMessage(
+                        Text.literal("[MySawit] ")
+                            .styled { t -> t.withBold(true).withColor(Formatting.GREEN) }
+                            .append(
+                                Text.literal("ngko disek kang, kesel")
+                                    .styled { style -> style.withBold(false).withColor(Formatting.WHITE) }
+                            ), false
+                    )
+                it.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_BELL.value(), SoundCategory.MASTER, 10F, 1F)
+                it.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_HARP.value(), SoundCategory.MASTER, 10F, 1F)
+            }
+            runTaskLater(8) {
+                client.player?.let {
+                    it.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_BELL.value(), SoundCategory.MASTER, 10F, 0.7F)
+                    it.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_HARP.value(), SoundCategory.MASTER, 10F, 0.7F)
+                }
+            }
             panen = false
             runTaskLater(Random.nextInt(30, 100)) {
                 println("Istirahat selesai")
+                client.player?.let {
+                    if (capek)
+                        it.sendMessage(
+                            Text.literal("[MySawit] ")
+                                .styled { t -> t.withBold(true).withColor(Formatting.GREEN) }
+                                .append(
+                                    Text.literal("Wes seger kang, lanjooot!")
+                                        .styled { style -> style.withBold(false).withColor(Formatting.WHITE) }
+                                ), false
+                        )
+                    it.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_BELL.value(), SoundCategory.MASTER, 10F, 0.7F)
+                    it.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_HARP.value(), SoundCategory.MASTER, 10F, 0.7F)
+                }
+                runTaskLater(8) {
+                    client.player?.let {
+                        it.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_BELL.value(), SoundCategory.MASTER, 10F, 1F)
+                        it.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_HARP.value(), SoundCategory.MASTER, 10F, 1F)
+                    }
+                }
                 panen = true
                 rute.duid()
                 // TODO
@@ -155,7 +211,7 @@ object SawitGameplay {
         val epsilon = 0.3f    // small threshold to snap
         val maxDelta = 7f   // max 5 degrees per tick
         // --- Yaw (horizontal) ---
-        var diffYaw = (rute.x - player.yaw + 540) % 360 - 180
+        val diffYaw = (rute.x - player.yaw + 540) % 360 - 180
         if (kotlin.math.abs(diffYaw) < epsilon) {
             player.yaw = rute.x    // snap if very close
         } else {
