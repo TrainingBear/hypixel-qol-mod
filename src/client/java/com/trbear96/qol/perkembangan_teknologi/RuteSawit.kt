@@ -1,8 +1,6 @@
 package com.trbear96.qol.perkembangan_teknologi
 
-import com.trbear96.METODEPANENSAWIT
 import com.trbear96.client
-import com.trbear96.config
 import com.trbear96.qol.core.onTick
 import com.trbear96.qol.core.panen
 import com.trbear96.qol.core.round
@@ -19,6 +17,7 @@ abstract class RuteSawit(val x: Float,
         client.options.backKey.isPressed = false
         client.options.leftKey.isPressed = false
         client.options.rightKey.isPressed = false
+        panen = false
     }
     abstract fun tebangPohon(player: ClientPlayerEntity)
     abstract fun panen(player: ClientPlayerEntity) : Boolean

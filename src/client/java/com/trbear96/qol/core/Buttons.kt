@@ -8,12 +8,15 @@ import com.trbear96.qol.guiexample.MainHUD
 import com.trbear96.rute
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper
 import net.minecraft.client.option.KeyBinding
+import net.minecraft.registry.RegistryKey
 import net.minecraft.text.Text
 import net.minecraft.util.Formatting
 import net.minecraft.util.Identifier
+import net.minecraft.world.World
 import org.lwjgl.glfw.GLFW
 
 var panen: Boolean = false
+var duniasebelum: RegistryKey<World>? = null
 var openMenu: Boolean = false
 
 object Buttons {
@@ -45,9 +48,9 @@ object Buttons {
                         .append(
                             Text.literal(if (panen) "Lanjut nandur $picked kang" else "Uwes kesel nandure kang?")
                                 .styled { style -> style.withBold(false).withColor(Formatting.YELLOW) }
-                        ),
-                    false
+                        ),false
                 )
+                duniasebelum = if(panen) client.world?.registryKey else null
                 rute.duid()
             }
 

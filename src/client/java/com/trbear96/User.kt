@@ -1,6 +1,5 @@
 package com.trbear96
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.trbear96.qol.core.JsonConfig
 import com.trbear96.qol.perkembangan_teknologi.RuteSawit
@@ -20,19 +19,8 @@ lateinit var menu: KeyBinding
  *      }
  * }
  */
-lateinit var config: ObjectNode
-lateinit var confighandler: JsonConfig
-var hasConfigChanged: Boolean = false
-
-val rute: RuteSawit
-    get() = routes[picked] ?: routes["Topaz"]!! //default
-
 val state = BitSet(256)
 
-lateinit var picked: String
-var jagaenggrek: Boolean = false
-var capek: Boolean = true
-var kebalik: Boolean = false // COMING SOON
 val routes = mapOf(
     "Nirmala" to RuteSawit.Nirmala,
     "Dumpy" to RuteSawit.dumpy,
@@ -40,8 +28,19 @@ val routes = mapOf(
     "Yangambi" to RuteSawit.yangambi,
 )
 
-fun aturUlangConfig(){
+lateinit var config: ObjectNode
+lateinit var confighandler: JsonConfig
+var hasConfigChanged: Boolean = false
+
+var rute: RuteSawit = routes["Topaz"]!! //default
+lateinit var picked: String
+var jagaenggrek: Boolean = false
+var capek: Boolean = true
+var kebalik: Boolean = false // COMING SOON
+
+fun aturUlangConfig() {
     picked = config.get(METODEPANENSAWIT).get(TIPE).asText()
+    rute = routes[picked]!!
     jagaenggrek = config.get(METODEPANENSAWIT).get(JAGAENGGREK).asBoolean()
     kebalik = config.get(METODEPANENSAWIT).get(KEBALIK).asBoolean()
     capek = config.get(METODEPANENSAWIT).get(CAPEK).asBoolean()
