@@ -25,11 +25,11 @@ class MySawit : ClientModInitializer {
             if (!has(JAGAENGGREK)) put(JAGAENGGREK, false)
             if (!has(KEBALIK)) put(KEBALIK, false)
             if (!has(CAPEK)) put(CAPEK, true)
+            if(!has(CONCEAL)) put(CONCEAL, false)
         } // tipe DEFAULT
         confighandler.save(MYSAWIT)
         config = node
         aturUlangConfig()
-        SawitGameplay.tanamSawit()
         SawitGameplay.panenSawit()
 
         ClientTickEvents.END_CLIENT_TICK.register { client ->

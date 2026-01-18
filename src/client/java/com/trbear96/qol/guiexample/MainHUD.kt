@@ -126,6 +126,38 @@ object MainHUD : WindowScreen(ElementaVersion.V10) {
                     }
                 })
         )
+        // CAPEK MSG
+        tombol.add(
+            UIBlock(
+                if (conceal) Color(140, 140, 70).toConstraint()
+                else Color(186, 186, 186).toConstraint()
+            )
+                .modifTombol("Conceal", container, onklik = {
+                    config.getOrMakeObject(METODEPANENSAWIT).put(
+                        CONCEAL,
+                        !config.get(METODEPANENSAWIT).get(CONCEAL).asBoolean()
+                    )
+                    hasConfigChanged = true
+                    tombol[tombol.size - 1].animate { // apply
+                        setColorAnimation(
+                            Animations.IN_OUT_BOUNCE,
+                            0.15f,
+                            Color(140, 140, 70).toConstraint()
+                        )
+                    }
+                    println("Set conceal to: ${config.get(METODEPANENSAWIT).get(CAPEK).asBoolean()}")
+                }, onkeluar = {
+                    this.animate { // apply
+                        setColorAnimation(
+                            Animations.IN_OUT_BOUNCE,
+                            0.25f,
+                            if (config.get(METODEPANENSAWIT).get(CAPEK).asBoolean())
+                                Color(140, 140, 70).toConstraint()
+                            else Color(186, 186, 186).toConstraint()
+                        )
+                    }
+                })
+        )
         // APPLY
         tombol.add(
             UIBlock(Color(120, 120, 120).toConstraint())
