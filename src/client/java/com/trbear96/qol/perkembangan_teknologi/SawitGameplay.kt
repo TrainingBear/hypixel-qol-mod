@@ -13,6 +13,7 @@ import net.minecraft.block.Blocks
 import net.minecraft.block.RedstoneBlock
 import net.minecraft.client.network.ClientPlayerEntity
 import net.minecraft.client.world.ClientWorld
+import net.minecraft.registry.RegistryKey
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvents
 import net.minecraft.text.Text
@@ -20,37 +21,61 @@ import net.minecraft.util.Formatting
 import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3i
+import net.minecraft.world.World
 import kotlin.random.Random
 
 object SawitGameplay {
     var pohon = false
     var final = false
+    var finalreached = false
 
     @JvmField
     var breakingPos: BlockPos? = null
-    var lahan: ClientWorld? = null
+    var lahan: RegistryKey<World>? = null
     var pos: BlockPos? = null
 
     fun update_lahan() {
-        lahan = client.world
+        lahan = client.world?.registryKey
         pos = client.player?.blockPos
     }
 
+    /**
+     * @return false jika lahan berubah, true jika tidak
+     */
     fun cek_lahan(): Boolean {
-        val current = client.player!!.blockPos
-        if (client.world != lahan ||
-            pos?.isWithinDistance(Vec3i(current.x, current.y, current.z), 2.0) != true ||
-            pos?.isWithinDistance(Vec3i(current.x, current.y, current.z), .0) == true // TODO
+        val current = client.player?.blockPos ?: run {
+            println("The player is null!!")
+            return false
+        }
+        if (client.world?.registryKey != lahan
+//            ||
+//            (pos?.isWithinDistance(Vec3i(current.x, current.y, current.z), 8.0) != true && !finalreached)
+//            pos?.isWithinDistance(Vec3i(current.x, current.y, current.z), .0) == true // TODO
         ) {
-            // lahan berubah
-            // lakukan sesuati
-            // TODO
+            client.player?.let { p ->
+                p.sendMessage(
+                    Text.literal("[MySawit] ")
+                        .styled { t -> t.withBold(true).withColor(Formatting.GREEN) }
+                        .append(
+                            Text.literal("Bahaya antek-antek asing mengintai")
+                                .styled { style -> style.withBold(false).withColor(Formatting.RED) }
+                        ), false
+                )
+                var count = 1
+                scheduleTimer(1, 2) { w ->
+                    if (count > 15) {
+                        w.close()
+                        return@scheduleTimer
+                    }
+                    p.playSound(SoundEvents.ITEM_TOTEM_USE, 10F, 1.2F)
+                    count += 1
+                }
+            }
             return false
         }
         return true
     }
 
-    // initialization
     fun tanamSawit() {
         onTick {
             val player = client.player
@@ -58,8 +83,13 @@ object SawitGameplay {
                 val down = player.blockPos.down()
                 val blockState = client.world!!.getBlockState(down)
                 val block = blockState.block
-                pohon = (block is RedstoneBlock) || (block == Blocks.GRASS_BLOCK)
-                final = (block == Blocks.END_STONE) || (block == Blocks.OBSIDIAN)
+                val left = client.world!!.getBlockState(player.blockPos.east(1)).block
+                val right = client.world!!.getBlockState(player.blockPos.west(1)).block
+                pohon = (block is RedstoneBlock) || (block == Blocks.GRASS_BLOCK) ||
+                        left == Blocks.QUARTZ_BLOCK || right == Blocks.QUARTZ_BLOCK;
+                final = (block == Blocks.END_STONE) || (block == Blocks.OBSIDIAN) ||
+                        left == Blocks.END_STONE || right == Blocks.END_STONE;
+                finalreached = final
             }
         }
     }
@@ -67,38 +97,15 @@ object SawitGameplay {
     var flag = false
 
     fun panenSawit() {
-        var swingCooldown = 0
+        update_lahan()
         breakingPos = null
         onTick {
-            val pindahdimensi: Boolean =
-                if (duniasebelum == null) false
-                else duniasebelum != client.world?.registryKey
-            if (!panen || pindahdimensi) {
+            val valid = cek_lahan()
+            if (!panen || !valid) {
                 it.close()
                 println("Berhenti memanen..")
                 pohon = false
                 rute.berhenti()
-                if (pindahdimensi) {
-                    client.player?.let { p ->
-                        p.sendMessage(
-                            Text.literal("[MySawit] ")
-                                .styled {t -> t.withBold(true).withColor(Formatting.GREEN) }
-                                .append(
-                                    Text.literal("Bahaya antek-antek asing mengintai")
-                                        .styled { style -> style.withBold(false).withColor(Formatting.RED) }
-                                ), false
-                        )
-                        var count = 1
-                        scheduleTimer(1, 2) { w ->
-                            if (count > 15) {
-                                w.close()
-                                return@scheduleTimer
-                            }
-                            p.playSound(SoundEvents.ITEM_TOTEM_USE, 10F, 1.2F)
-                            count += 1
-                        }
-                    }
-                }
                 return@onTick
             }
             val player = client.player ?: return@onTick
@@ -112,26 +119,17 @@ object SawitGameplay {
             }
             if (jagaenggrek && (player.yaw != rute.x || player.pitch != rute.y))
                 siapinEngrek(player)
-//            if (!player.handSwinging) {
-//                player.swingHand(Hand.MAIN_HAND);
-//                swingCooldown = 6;
-//            }
-//
-//            if (swingCooldown > 0) {
-//                swingCooldown--;
-//            }
             if (client.crosshairTarget !is BlockHitResult)
                 breakingPos = null
-//                return@onTick
             val hit = client.crosshairTarget as? BlockHitResult
             if (hit == null || client.world!!.isAir(hit.blockPos))
                 breakingPos = null
-//                return@onTick
             else if (breakingPos == null) {
                 breakingPos = hit.blockPos
                 client.interactionManager?.attackBlock(hit.blockPos, player.facing)
             } else if (breakingPos == hit.blockPos)
                 client.interactionManager?.updateBlockBreakingProgress(hit.blockPos, player.facing)
+            else breakingPos = null;
 
             if (pohon && !flag) {
                 println("Edge has been reached")
@@ -142,9 +140,11 @@ object SawitGameplay {
             }
             if (final) {
                 final = false
+                runTaskLater(240) { finalreached = false}
                 client.player?.networkHandler?.sendChatCommand("warp garden")
             }
             istirahat()
+            update_lahan()
         }
     }
 

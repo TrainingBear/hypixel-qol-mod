@@ -11,12 +11,14 @@ import net.minecraft.client.network.ClientPlayerEntity
 abstract class RuteSawit(val x: Float,
                          val y: Float,
                          val speed: Int) {
+    var kanan: Boolean? = true
     fun berhenti(){
         client.options.attackKey.isPressed = false
         client.options.forwardKey.isPressed = false
         client.options.backKey.isPressed = false
         client.options.leftKey.isPressed = false
         client.options.rightKey.isPressed = false
+//        kanan = true;
         panen = false
     }
     abstract fun tebangPohon(player: ClientPlayerEntity)
@@ -72,7 +74,6 @@ abstract class RuteSawit(val x: Float,
     }
 
     object topaz : RuteSawit(.0f, -58.5f, 400) {
-        var kanan: Boolean? = true
         override fun tebangPohon(player: ClientPlayerEntity) {
             val left = player.blockPos.east(1)
             val right = player.blockPos.west(1)
@@ -92,7 +93,6 @@ abstract class RuteSawit(val x: Float,
     }
 
     object dumpy :  RuteSawit(-164.0f, 5.5f, 233) {
-        var kanan: Boolean? = true
         override fun tebangPohon(player: ClientPlayerEntity) {
             val right = player.blockPos.east(1)
             val left = player.blockPos.west(1)
@@ -122,7 +122,6 @@ abstract class RuteSawit(val x: Float,
     }
 
     object yangambi : RuteSawit(0f, 0f, 248) {
-        var kanan: Boolean? = true
         override fun tebangPohon(player: ClientPlayerEntity) {
             val left = player.blockPos.east(1)
             val right = player.blockPos.west(1)
@@ -142,7 +141,6 @@ abstract class RuteSawit(val x: Float,
     }
 
     object Nirmala : RuteSawit(135f, -45f, 219){
-        var kanan: Boolean? = true
         override fun tebangPohon(player: ClientPlayerEntity) {
             val right = player.blockPos.east(1)
             val left = player.blockPos.west(1)
