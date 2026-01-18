@@ -127,7 +127,7 @@ object SawitGameplay {
     }
 
     fun istirahat() {
-        if (0.01f.rollChance()) {
+        if (0.00417f.rollChance()) {
             println("Sedang istirahat... ")
             belIstirahat(true)
             pos = client.player!!.blockPos
