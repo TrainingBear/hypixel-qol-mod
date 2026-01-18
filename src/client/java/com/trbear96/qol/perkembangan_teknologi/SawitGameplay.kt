@@ -199,11 +199,15 @@ object SawitGameplay {
         }
         var count = 1 // PEREDAM SUARA (RAKYAT)
         scheduleTimer(1, 1) {
-            if (count > 9) client.soundManager.stopSounds(
-                Identifier.of(
-                    "minecraft", "entity.experience_orb.pickup"
-                ), null
-            )
+            if (count > 9) {
+                it.close()
+                return@scheduleTimer
+            }
+            client.soundManager.stopSounds(
+                    Identifier.of(
+                        "minecraft", "entity.experience_orb.pickup"
+                    ), null
+                )
             count += 1
 
         }
