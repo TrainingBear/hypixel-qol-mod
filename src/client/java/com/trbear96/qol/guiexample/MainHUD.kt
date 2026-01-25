@@ -116,7 +116,17 @@ object MainHUD : WindowScreen(ElementaVersion.V10) {
         tombol.add(
             UIBlock(Color(230, 230, 230).toConstraint())
                 .modifTombol("Diwalek", container, onklik = {
-                    if (rute.kanan == null) return@modifTombol
+                    if (rute.kanan == null) {
+                        rute.kanan = true
+                        com.trbear96.client.player?.sendMessage(
+                            Text.literal("[MySawit] ")
+                                .styled { it.withBold(true).withColor(Formatting.GREEN) }
+                                .append(
+                                    Text.literal("Alat nyawit error! dibetulin ke kanan")
+                                        .styled { style -> style.withBold(false).withColor(Formatting.WHITE) }
+                                ), false
+                        )
+                    }else{
                     rute.kanan = !rute.kanan!!
                     com.trbear96.client.player?.sendMessage(
                         Text.literal("[MySawit] ")
@@ -125,7 +135,7 @@ object MainHUD : WindowScreen(ElementaVersion.V10) {
                                 Text.literal(if (rute.kanan!!) "Walek ke kanan" else "Walek ke kiri")
                                     .styled { style -> style.withBold(false).withColor(Formatting.WHITE) }
                             ), false
-                    )
+                    )}
                 }, onkeluar = {
                     this.animate { // apply
                         setColorAnimation(
