@@ -8,11 +8,13 @@ import com.trbear96.qol.core.runTaskLater
 import net.minecraft.block.FluidBlock
 import net.minecraft.client.network.ClientPlayerEntity
 
-abstract class RuteSawit(val x: Float,
-                         val y: Float,
-                         val speed: Int) {
+abstract class RuteSawit(
+    val x: Float,
+    val y: Float,
+    val speed: Int
+) {
     var kanan: Boolean? = true
-    fun berhenti(){
+    fun berhenti() {
         client.options.attackKey.isPressed = false
         client.options.forwardKey.isPressed = false
         client.options.backKey.isPressed = false
@@ -21,10 +23,11 @@ abstract class RuteSawit(val x: Float,
 //        kanan = true;
         panen = false
     }
-    abstract fun tebangPohon(player: ClientPlayerEntity)
-    abstract fun panen(player: ClientPlayerEntity) : Boolean
 
-    private fun siapkanEngrek(player: ClientPlayerEntity){
+    abstract fun tebangPohon(player: ClientPlayerEntity)
+    abstract fun panen(player: ClientPlayerEntity): Boolean
+
+    private fun siapkanEngrek(player: ClientPlayerEntity) {
         val lerp = 0.2f       // speed factor (can increase to 0.3~0.5 for faster)
         val epsilon = 0.3f    // small threshold to snap
         val maxDelta = 7f   // max 5 degrees per tick
@@ -67,55 +70,67 @@ abstract class RuteSawit(val x: Float,
         }
     }
 
-    fun duid(){
+    fun duid() {
         setupEngrek {
             SawitGameplay.panenSawit()
         }
     }
 
-    object topaz : RuteSawit(.0f, -58.5f, 400) {
+    object topaz : RuteSawit(0f, 30f, 155) {
         override fun tebangPohon(player: ClientPlayerEntity) {
             val left = player.blockPos.east(1)
             val right = player.blockPos.west(1)
-            kanan = if (client.world!!.getBlockState(right).block is FluidBlock) false
-            else if (client.world!!.getBlockState(left).block is FluidBlock) true
-            else null
+            client.options.backKey.isPressed = true
+            runTaskLater(40) {
+                client.options.backKey.isPressed = false
+            }
+            kanan = if (client.world!!.getBlockState(right).isSolidBlock(client.world, right)) {
+                runTaskLater(40) {
+                    kanan = false
+                }
+                null
+            } else if (client.world!!.getBlockState(left).isSolidBlock(client.world, left)) {
+                runTaskLater(40) {
+                    kanan = true
+                }
+                null
+            } else null
         }
 
         override fun panen(player: ClientPlayerEntity): Boolean {
-            if(kanan == null) return false
-//            client.options.attackKey.isPressed = true
-            client.options.forwardKey.isPressed = true
-            client.options.leftKey.isPressed = kanan!!
-            client.options.rightKey.isPressed = !kanan!!
+            if (kanan != null) {
+                client.options.leftKey.isPressed = !kanan!!
+                client.options.rightKey.isPressed = kanan!!
+            } else {
+                client.options.leftKey.isPressed = false
+                client.options.rightKey.isPressed = false
+            }
             return true
         }
     }
 
-    object dumpy :  RuteSawit(-164.0f, 5.5f, 233) {
+    object dumpy : RuteSawit(-164.0f, 5.5f, 233) {
         override fun tebangPohon(player: ClientPlayerEntity) {
             val right = player.blockPos.east(1)
             val left = player.blockPos.west(1)
             client.options.backKey.isPressed = true
-            runTaskLater(30){
+            runTaskLater(30) {
                 client.options.backKey.isPressed = false
             }
             kanan = if (client.world!!.getBlockState(right).isAir) {
-                false
-            }
-            else if (client.world!!.getBlockState(left).isAir) {
-                runTaskLater(20){
-                    kanan = true
+                true
+            } else if (client.world!!.getBlockState(left).isAir) {
+                runTaskLater(20) {
+                    kanan = false
                 }
-                false
-            }
-            else null
+                true
+            } else null
         }
 
         override fun panen(player: ClientPlayerEntity): Boolean {
-            if(kanan == null) return false
-            client.options.leftKey.isPressed = kanan!!
-            client.options.rightKey.isPressed = !kanan!!
+            if (kanan == null) return false
+            client.options.leftKey.isPressed = !kanan!!
+            client.options.rightKey.isPressed = kanan!!
             return true
         }
 
@@ -125,40 +140,39 @@ abstract class RuteSawit(val x: Float,
         override fun tebangPohon(player: ClientPlayerEntity) {
             val left = player.blockPos.east(1)
             val right = player.blockPos.west(1)
-            kanan = if (client.world!!.getBlockState(right).block is FluidBlock) false
-            else if (client.world!!.getBlockState(left).block is FluidBlock) true
+            kanan = if (client.world!!.getBlockState(right).block is FluidBlock) true
+            else if (client.world!!.getBlockState(left).block is FluidBlock) false
             else null
         }
 
         override fun panen(player: ClientPlayerEntity): Boolean {
-            if(kanan == null) return false
+            if (kanan == null) return false
 //            client.options.attackKey.isPressed = true
             client.options.forwardKey.isPressed = true
-            client.options.leftKey.isPressed = kanan!!
-            client.options.rightKey.isPressed = !kanan!!
+            client.options.leftKey.isPressed = !kanan!!
+            client.options.rightKey.isPressed = kanan!!
             return true
         }
     }
 
-    object Nirmala : RuteSawit(135f, -45f, 219){
+    object Nirmala : RuteSawit(135f, -45f, 219) {
         override fun tebangPohon(player: ClientPlayerEntity) {
             val right = player.blockPos.east(1)
             val left = player.blockPos.west(1)
-            kanan = if (!client.world!!.getBlockState(right).isSolidBlock(client.world, right)) {
-                false
-            }
-            else if (!client.world!!.getBlockState(left).isSolidBlock(client.world, left)) {
-                runTaskLater(13){
-                    kanan = true
+            kanan = if (client.world!!.getBlockState(right).isSolidBlock(client.world, right)) {
+                true
+            } else if (!client.world!!.getBlockState(left).isSolidBlock(client.world, left)) {
+                runTaskLater(13) {
+                    kanan = false
                 }
-                false
-            }
-            else null
+                true
+            } else null
         }
+
         override fun panen(player: ClientPlayerEntity): Boolean {
-            if(kanan == null) return false
-            client.options.forwardKey.isPressed = kanan!!
-            client.options.rightKey.isPressed = !kanan!!
+            if (kanan == null) return false
+            client.options.forwardKey.isPressed = !kanan!!
+            client.options.rightKey.isPressed = kanan!!
             return true
         }
     }

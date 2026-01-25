@@ -1,8 +1,8 @@
 package com.trbear96.qol.guiexample
 
-import com.fasterxml.jackson.databind.node.ObjectNode
 import com.trbear96.*
 import com.trbear96.qol.core.JsonConfig.Companion.getOrMakeObject
+import com.trbear96.qol.core.panen
 import gg.essential.elementa.ElementaVersion
 import gg.essential.elementa.UIComponent
 import gg.essential.elementa.WindowScreen
@@ -12,6 +12,8 @@ import gg.essential.elementa.constraints.*
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
 import gg.essential.elementa.effects.ScissorEffect
+import net.minecraft.text.Text
+import net.minecraft.util.Formatting
 import java.awt.Color
 
 /**
@@ -67,64 +69,21 @@ object MainHUD : WindowScreen(ElementaVersion.V10) {
             UIBlock(
                 if (jagaenggrek) Color(140, 140, 70).toConstraint()
                 else Color(186, 186, 186).toConstraint()
-            )
-                .modifTombol("Jaga Enggrek", container, onklik = {
-                    config.getOrMakeObject(METODEPANENSAWIT).put(
-                        JAGAENGGREK,
-                        !config.get(METODEPANENSAWIT).get(JAGAENGGREK).asBoolean()
-                    )
-                    hasConfigChanged = true
-                    tombol[tombol.size - 1].animate { // apply
-                        setColorAnimation(
-                            Animations.IN_OUT_BOUNCE,
-                            0.15f,
-                            Color(140, 140, 70).toConstraint()
-                        )
-                    }
-                    println("Set jaga enggrek to: ${config.get(METODEPANENSAWIT).get(JAGAENGGREK).asBoolean()}")
-                }, onkeluar = {
-                    this.animate { // apply
-                        setColorAnimation(
-                            Animations.IN_OUT_BOUNCE,
-                            0.5f,
-                            if (config.get(METODEPANENSAWIT).get(JAGAENGGREK).asBoolean())
-                                Color(140, 140, 70).toConstraint()
-                            else Color(186, 186, 186).toConstraint()
-                        )
-                    }
-                })
+            ).modifTombol("Jaga Enggrek", container, METODEPANENSAWIT to JAGAENGGREK)
         )
         // CAPEK MSG
         tombol.add(
             UIBlock(
                 if (capek) Color(140, 140, 70).toConstraint()
                 else Color(186, 186, 186).toConstraint()
-            )
-                .modifTombol("Capek MSG", container, onklik = {
-                    config.getOrMakeObject(METODEPANENSAWIT).put(
-                        CAPEK,
-                        !config.get(METODEPANENSAWIT).get(CAPEK).asBoolean()
-                    )
-                    hasConfigChanged = true
-                    tombol[tombol.size - 1].animate { // apply
-                        setColorAnimation(
-                            Animations.IN_OUT_BOUNCE,
-                            0.15f,
-                            Color(140, 140, 70).toConstraint()
-                        )
-                    }
-                    println("Set capek msg to: ${config.get(METODEPANENSAWIT).get(CAPEK).asBoolean()}")
-                }, onkeluar = {
-                    this.animate { // apply
-                        setColorAnimation(
-                            Animations.IN_OUT_BOUNCE,
-                            0.25f,
-                            if (config.get(METODEPANENSAWIT).get(CAPEK).asBoolean())
-                                Color(140, 140, 70).toConstraint()
-                            else Color(186, 186, 186).toConstraint()
-                        )
-                    }
-                })
+            ).modifTombol("Capek MSG", container, METODEPANENSAWIT to CAPEK)
+        )
+        // CAPEK MSG
+        tombol.add(
+            UIBlock(
+                if (conceal) Color(140, 140, 70).toConstraint()
+                else Color(186, 186, 186).toConstraint()
+            ).modifTombol("Conceal", container, METODEPANENSAWIT to CONCEAL)
         )
         // APPLY
         tombol.add(
@@ -153,6 +112,39 @@ object MainHUD : WindowScreen(ElementaVersion.V10) {
                     }
                 })
         )
+        // REVERSE
+        tombol.add(
+            UIBlock(Color(230, 230, 230).toConstraint())
+                .modifTombol("Diwalek", container, onklik = {
+                    if (rute.kanan == null) {
+                        rute.kanan = true
+                        com.trbear96.client.player?.sendMessage(
+                            Text.literal("[MySawit] ")
+                                .styled { it.withBold(true).withColor(Formatting.GREEN) }
+                                .append(
+                                    Text.literal("Alat nyawit error! dibetulin ke kanan")
+                                        .styled { style -> style.withBold(false).withColor(Formatting.WHITE) }
+                                ), false
+                        )
+                    }else{
+                    rute.kanan = !rute.kanan!!
+                    com.trbear96.client.player?.sendMessage(
+                        Text.literal("[MySawit] ")
+                            .styled { it.withBold(true).withColor(Formatting.GREEN) }
+                            .append(
+                                Text.literal(if (rute.kanan!!) "Walek ke kanan" else "Walek ke kiri")
+                                    .styled { style -> style.withBold(false).withColor(Formatting.WHITE) }
+                            ), false
+                    )}
+                }, onkeluar = {
+                    this.animate { // apply
+                        setColorAnimation(
+                            Animations.IN_OUT_BOUNCE, 0.125f,
+                            Color(230, 230, 230).toConstraint()
+                        )
+                    }
+                })
+        )
         /*        UIText("Pilih sawit yang kamu suka!", shadow = false).constrain {
         *            x = 2.pixels()
         *            y = CenterConstraint()
@@ -168,22 +160,51 @@ object MainHUD : WindowScreen(ElementaVersion.V10) {
     fun UIBlock.modifTombol(
         label: String,
         parent: UIComponent,
-        onklik: UIBlock.() -> Unit,
-        onkeluar: UIBlock.() -> Unit
+        modulConfig: Pair<String, String>? = null,
+        onklik: (UIBlock.() -> Unit)? = null,
+        onkeluar: (UIBlock.() -> Unit)? = null
     ): UIBlock {
         this.constrain {
             x = (10 + (indekstombol * 10)).percent()
             y = 90.percent()
             width = 40.pixels()
             height = 16.pixels()
-        }.onMouseClick { onklik() }.onMouseEnter {
+        }.onMouseClick {
+            if (modulConfig != null) {
+                config.getOrMakeObject(modulConfig.first).put(
+                    modulConfig.second,
+                    !config.get(modulConfig.first).get(modulConfig.second).asBoolean()
+                )
+                hasConfigChanged = true
+                tombol[tombol.size - 2].animate { // apply
+                    setColorAnimation(
+                        Animations.IN_OUT_BOUNCE,
+                        0.15f,
+                        Color(140, 140, 70).toConstraint()
+                    )
+                }
+            }
+            if (onklik != null) onklik()
+        }.onMouseEnter {
             this.animate {
                 setColorAnimation(
                     Animations.IN_EXP, 0.25f,
                     Color(120, 120, 100).toConstraint(), 0f
                 )
             }
-        }.onMouseLeave { onkeluar() } childOf parent
+        }.onMouseLeave {
+            if (modulConfig != null)
+                this.animate { // apply
+                    setColorAnimation(
+                        Animations.IN_OUT_BOUNCE,
+                        0.125f,
+                        if (config.get(modulConfig.first).get(modulConfig.second).asBoolean())
+                            Color(140, 140, 70).toConstraint()
+                        else Color(186, 186, 186).toConstraint()
+                    )
+                }
+            if (onkeluar != null) onkeluar()
+        } childOf parent
         UIText(label, shadow = false).constrain {
             x = 1.pixels()
             y = CenterConstraint()
@@ -210,7 +231,7 @@ object MainHUD : WindowScreen(ElementaVersion.V10) {
                 }
             }
             config.getOrMakeObject(METODEPANENSAWIT).put(TIPE, name)
-            tombol[tombol.size - 1].animate { // apply
+            tombol[tombol.size - 2].animate { // apply
                 setColorAnimation(
                     Animations.IN_OUT_BOUNCE,
                     0.15f,

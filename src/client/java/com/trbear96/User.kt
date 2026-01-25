@@ -36,6 +36,7 @@ var rute: RuteSawit = routes["Topaz"]!! //default
 lateinit var picked: String
 var jagaenggrek: Boolean = false
 var capek: Boolean = true
+var conceal: Boolean = false
 var kebalik: Boolean = false // COMING SOON
 
 fun aturUlangConfig() {
@@ -44,6 +45,7 @@ fun aturUlangConfig() {
     jagaenggrek = config.get(METODEPANENSAWIT).get(JAGAENGGREK).asBoolean()
     kebalik = config.get(METODEPANENSAWIT).get(KEBALIK).asBoolean()
     capek = config.get(METODEPANENSAWIT).get(CAPEK).asBoolean()
+    conceal = config.get(METODEPANENSAWIT).get(CONCEAL).asBoolean()
 }
 
 const val MYSAWIT = "mysawit" // nama
@@ -51,4 +53,5 @@ const val METODEPANENSAWIT = "metodepanensawit" // branch nandur
 const val TIPE = "tipe" // tipe picked
 const val CAPEK = "capek" // pesan pas istirahat
 const val JAGAENGGREK = "jagaenggrek" // jaga facing
+const val CONCEAL = "distancewatchdog" // bahaya jarak/teleprot
 const val KEBALIK = "kebalik" // COMING SOON
