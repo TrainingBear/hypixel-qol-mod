@@ -1,8 +1,8 @@
 package com.trbear96.qol.guiexample
 
-import com.fasterxml.jackson.databind.node.ObjectNode
 import com.trbear96.*
 import com.trbear96.qol.core.JsonConfig.Companion.getOrMakeObject
+import com.trbear96.qol.core.panen
 import gg.essential.elementa.ElementaVersion
 import gg.essential.elementa.UIComponent
 import gg.essential.elementa.WindowScreen
@@ -12,6 +12,8 @@ import gg.essential.elementa.constraints.*
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
 import gg.essential.elementa.effects.ScissorEffect
+import net.minecraft.text.Text
+import net.minecraft.util.Formatting
 import java.awt.Color
 
 /**
@@ -110,6 +112,29 @@ object MainHUD : WindowScreen(ElementaVersion.V10) {
                     }
                 })
         )
+        // REVERSE
+        tombol.add(
+            UIBlock(Color(230, 230, 230).toConstraint())
+                .modifTombol("Diwalek", container, onklik = {
+                    if (rute.kanan == null) return@modifTombol
+                    rute.kanan = !rute.kanan!!
+                    com.trbear96.client.player?.sendMessage(
+                        Text.literal("[MySawit] ")
+                            .styled { it.withBold(true).withColor(Formatting.GREEN) }
+                            .append(
+                                Text.literal(if (rute.kanan!!) "Walek ke kanan" else "Walek ke kiri")
+                                    .styled { style -> style.withBold(false).withColor(Formatting.WHITE) }
+                            ), false
+                    )
+                }, onkeluar = {
+                    this.animate { // apply
+                        setColorAnimation(
+                            Animations.IN_OUT_BOUNCE, 0.125f,
+                            Color(230, 230, 230).toConstraint()
+                        )
+                    }
+                })
+        )
         /*        UIText("Pilih sawit yang kamu suka!", shadow = false).constrain {
         *            x = 2.pixels()
         *            y = CenterConstraint()
@@ -141,7 +166,7 @@ object MainHUD : WindowScreen(ElementaVersion.V10) {
                     !config.get(modulConfig.first).get(modulConfig.second).asBoolean()
                 )
                 hasConfigChanged = true
-                tombol[tombol.size - 1].animate { // apply
+                tombol[tombol.size - 2].animate { // apply
                     setColorAnimation(
                         Animations.IN_OUT_BOUNCE,
                         0.15f,
@@ -158,16 +183,16 @@ object MainHUD : WindowScreen(ElementaVersion.V10) {
                 )
             }
         }.onMouseLeave {
-            if(modulConfig != null)
-            this.animate { // apply
-                setColorAnimation(
-                    Animations.IN_OUT_BOUNCE,
-                    0.25f,
-                    if (config.get(modulConfig.first).get(modulConfig.second).asBoolean())
-                        Color(140, 140, 70).toConstraint()
-                    else Color(186, 186, 186).toConstraint()
-                )
-            }
+            if (modulConfig != null)
+                this.animate { // apply
+                    setColorAnimation(
+                        Animations.IN_OUT_BOUNCE,
+                        0.125f,
+                        if (config.get(modulConfig.first).get(modulConfig.second).asBoolean())
+                            Color(140, 140, 70).toConstraint()
+                        else Color(186, 186, 186).toConstraint()
+                    )
+                }
             if (onkeluar != null) onkeluar()
         } childOf parent
         UIText(label, shadow = false).constrain {
@@ -196,7 +221,7 @@ object MainHUD : WindowScreen(ElementaVersion.V10) {
                 }
             }
             config.getOrMakeObject(METODEPANENSAWIT).put(TIPE, name)
-            tombol[tombol.size - 1].animate { // apply
+            tombol[tombol.size - 2].animate { // apply
                 setColorAnimation(
                     Animations.IN_OUT_BOUNCE,
                     0.15f,

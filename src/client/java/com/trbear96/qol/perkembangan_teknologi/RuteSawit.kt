@@ -73,21 +73,25 @@ abstract class RuteSawit(val x: Float,
         }
     }
 
-    object topaz : RuteSawit(.0f, -58.5f, 400) {
+    object topaz : RuteSawit(0f, 30f, 155) {
         override fun tebangPohon(player: ClientPlayerEntity) {
             val left = player.blockPos.east(1)
             val right = player.blockPos.west(1)
-            kanan = if (client.world!!.getBlockState(right).block is FluidBlock) false
-            else if (client.world!!.getBlockState(left).block is FluidBlock) true
+            client.options.backKey.isPressed = true
+            runTaskLater(45){
+                client.options.backKey.isPressed = false
+            }
+            kanan = if (client.world!!.getBlockState(right).isAir)
+                true
+            else if (client.world!!.getBlockState(left).isAir)
+                false
             else null
         }
 
         override fun panen(player: ClientPlayerEntity): Boolean {
             if(kanan == null) return false
-//            client.options.attackKey.isPressed = true
-            client.options.forwardKey.isPressed = true
-            client.options.leftKey.isPressed = kanan!!
-            client.options.rightKey.isPressed = !kanan!!
+            client.options.leftKey.isPressed = !kanan!!
+            client.options.rightKey.isPressed = kanan!!
             return true
         }
     }
@@ -101,21 +105,21 @@ abstract class RuteSawit(val x: Float,
                 client.options.backKey.isPressed = false
             }
             kanan = if (client.world!!.getBlockState(right).isAir) {
-                false
+                true
             }
             else if (client.world!!.getBlockState(left).isAir) {
-                runTaskLater(20){
-                    kanan = true
+                runTaskLater(25){
+                    kanan = false
                 }
-                false
+                true
             }
             else null
         }
 
         override fun panen(player: ClientPlayerEntity): Boolean {
             if(kanan == null) return false
-            client.options.leftKey.isPressed = kanan!!
-            client.options.rightKey.isPressed = !kanan!!
+            client.options.leftKey.isPressed = !kanan!!
+            client.options.rightKey.isPressed = kanan!!
             return true
         }
 
@@ -144,21 +148,20 @@ abstract class RuteSawit(val x: Float,
         override fun tebangPohon(player: ClientPlayerEntity) {
             val right = player.blockPos.east(1)
             val left = player.blockPos.west(1)
-            kanan = if (!client.world!!.getBlockState(right).isSolidBlock(client.world, right)) {
-                false
-            }
-            else if (!client.world!!.getBlockState(left).isSolidBlock(client.world, left)) {
+            kanan = if (client.world!!.getBlockState(right).isSolidBlock(client.world, right))
+                true
+            else if (client.world!!.getBlockState(left).isSolidBlock(client.world, left)) {
                 runTaskLater(13){
-                    kanan = true
+                    kanan = false
                 }
-                false
+                true
             }
             else null
         }
         override fun panen(player: ClientPlayerEntity): Boolean {
             if(kanan == null) return false
             client.options.forwardKey.isPressed = kanan!!
-            client.options.rightKey.isPressed = !kanan!!
+            client.options.rightKey.isPressed = kanan!!
             return true
         }
     }

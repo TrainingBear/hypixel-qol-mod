@@ -96,7 +96,6 @@ object SawitGameplay {
                 siapinEngrek(player)
             if (client.crosshairTarget !is BlockHitResult)
                 breakingPos = null
-
             val hit = client.crosshairTarget as? BlockHitResult
             if (hit == null || client.world!!.isAir(hit.blockPos))
                 breakingPos = null
@@ -116,7 +115,8 @@ object SawitGameplay {
             }
             if (final) {
                 final = false
-                runTaskLater(240) {
+                jarakWatDokAktif = false
+                runTaskLater(100) { // 5 detik cd
                     pos = client.player!!.blockPos
                     jarakWatDokAktif = true
                 }
@@ -151,7 +151,7 @@ object SawitGameplay {
 
     fun siapinEngrek(player: ClientPlayerEntity) {
         val lerp = 0.2f       // speed factor (can increase to 0.3~0.5 for faster)
-        val epsilon = 0.3f    // small threshold to snap
+        val epsilon = 0.3f    // small threshold to snapd
         val maxDelta = 7f   // max 5 degrees per tick
         // --- Yaw (horizontal) ---
         val diffYaw = (rute.x - player.yaw + 540) % 360 - 180
@@ -188,7 +188,7 @@ object SawitGameplay {
 
         if (capek) p.sendMessage(
             Text.literal("[MySawit] ").styled { t -> t.withBold(true).withColor(Formatting.GREEN) }.append(
-                Text.literal("ngko disek kang, kesel")
+                Text.literal(if (mulai) "ngko disek kang, kesel" else "wes seger, lanjooot!")
                     .styled { style -> style.withBold(false).withColor(Formatting.WHITE) }), false
         )
         p.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_BELL.value(), SoundCategory.MASTER, 10F, pitcekAwal)
@@ -204,10 +204,10 @@ object SawitGameplay {
                 return@scheduleTimer
             }
             client.soundManager.stopSounds(
-                    Identifier.of(
-                        "minecraft", "entity.experience_orb.pickup"
-                    ), null
-                )
+                Identifier.of(
+                    "minecraft", "entity.experience_orb.pickup"
+                ), null
+            )
             count += 1
 
         }
